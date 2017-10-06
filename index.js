@@ -1,11 +1,9 @@
+var toStr = require('./u8-to-string.js')
+
 var sizes = {
   float: 4, vec2: 8, vec3: 12, vec4: 16,
   mat2: 16, mat3: 36, mat4: 64,
   uint16: 2, uint32: 4
-}
-
-function encode (str) {
-  return Buffer.from(str).toString()
 }
 
 module.exports = function (abuf) {
@@ -16,7 +14,8 @@ module.exports = function (abuf) {
     }
   }
   var offsets = { vertex: i+1 }
-  var lines = encode(data.subarray(0,i-1)).split('\n')
+  var start = performance.now()
+  var lines = toStr(data.subarray(0,i-1)).split('\n')
   var m = /^BGA (.+)/.exec(lines[0])
   if (!m) throw new Error('magic number not found')
   var header = {

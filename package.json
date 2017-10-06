@@ -1,0 +1,5 @@
+{
+  "browser": {
+    "./u8-to-string.js": "./u8-to-string-browser.js"
+  }
+}

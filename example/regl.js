@@ -8,7 +8,9 @@ var draw = null
 xhr({ url: '/teapot.bga', responseType: 'arraybuffer' }, onxhr)
 function onxhr (err, res, body) {
   if (err || res.statusCode !== 200) return
+  var start = performance.now()
   var mesh = parse(body)
+  console.log('END',performance.now() - start)
   var attributes = {}
   var attrBuffer = regl.buffer({
     usage: 'static',
@@ -22,7 +24,6 @@ function onxhr (err, res, body) {
       buffer: attrBuffer
     }
   })
-  console.log(mesh.data.triangle)
   draw = regl({
     frag: `
       precision highp float;
