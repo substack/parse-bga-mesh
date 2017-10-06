@@ -23,7 +23,7 @@ module.exports = function (abuf) {
     version: m[1],
     attributes: [],
     types: { edge: 'uint16', triangle: 'uint16' },
-    counts: { edge: 0, triangle: 0 }
+    counts: { vertex: 0, edge: 0, triangle: 0 }
   }
   var stride = 0
   for (var i = 1; i < lines.length; i++) {
@@ -57,33 +57,38 @@ module.exports = function (abuf) {
   for (var i = 0; i < header.attributes.length; i++) {
     vsize += sizes[header.attributes[i].type]
   }
-  var lengths = {
+  var byteLengths = {
     vertex: header.counts.vertex * vsize,
     edge: header.counts.edge * sizes[header.types.edge],
     triangle: header.counts.triangle * sizes[header.types.triangle]
   }
-  offsets.edge = offsets.vertex + lengths.vertex
-  offsets.triangle = offsets.edge + lengths.edge
+  offsets.edge = offsets.vertex + byteLengths.vertex
+  offsets.triangle = offsets.edge + byteLengths.edge
+
+  var rdata = {
+    vertex: new Uint8Array(
+      data.buffer, offsets.vertex, header.counts.vertex * vsize),
+  }
+  if (header.types.edge === 'uint16') {
+    rdata.edge = new Uint16Array(
+      rdata.buffer, offsets.edge, header.counts.edge*2)
+  } else if (header.types.edge === 'uint32') {
+    rdata.edge = new Uint32Array(
+      data.buffer, offsets.edge, header.counts.edge*2)
+  } else {
+    throw new Error('unsupported edge type ' + header.types.edge)
+  }
+  if (header.types.triangle === 'uint16') {
+    rdata.triangle = new Uint16Array(
+      data.buffer, offsets.triangle, header.counts.triangle*3)
+  } else if (header.types.triangle === 'uint32') {
+    rdata.triangle = new Uint32Array(
+      data.buffer, offsets.triangle, header.counts.triangle*3)
+  } else {
+    throw new Error('unsupported triangle type ' + header.types.triangle)
+  }
   return {
     header: header,
-    data: {
-      vertex: data.subarray(
-        offsets.vertex, offsets.vertex + lengths.vertex),
-      edge: header.types.edge
-        ? toarray(header.types.edge,
-            data.subarray(offsets.edge, offsets.edge + lengths.edge))
-        : [],
-      triangle: header.types.triangle
-        ? toarray(header.types.triangle,
-            data.subarray(offsets.triangle,
-              offsets.triangle + lengths.triangle))
-        : []
-    }
+    data: rdata
   }
-}
-
-function toarray (type, data) {
-  if (type === 'uint16') return new Uint16Array(data.buffer)
-  if (type === 'uint32') return new Uint32Array(data.buffer)
-  throw new Error('unexpected type ' + type)
 }
