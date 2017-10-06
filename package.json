@@ -1,5 +1,10 @@
 {
   "browser": {
     "./u8-to-string.js": "./u8-to-string-browser.js"
+  },
+  "devDependencies": {
+    "choo": "^6.4.0",
+    "convert-obj": "^1.0.0",
+    "xhr": "^2.4.0"
   }
 }

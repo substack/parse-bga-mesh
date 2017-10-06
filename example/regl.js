@@ -1,4 +1,6 @@
-var regl = require('regl')()
+var regl = require('regl')({
+  extensions: [ 'oes_element_index_uint' ]
+})
 var camera = require('regl-camera')(regl, { distance: 50 })
 var xhr = require('xhr')
 var parse = require('../')
@@ -13,7 +15,6 @@ function onxhr (err, res, body) {
   console.log('END',performance.now() - start)
   var attributes = {}
   var attrBuffer = regl.buffer({
-    usage: 'static',
     type: 'float32',
     data: mesh.data.vertex
   })
@@ -41,7 +42,10 @@ function onxhr (err, res, body) {
       }
     `,
     attributes: attributes,
-    elements: mesh.data.triangle
+    elements: regl.elements({
+      type: mesh.header.types.triangle,
+      data: mesh.data.triangle
+    })
   })
 }
 

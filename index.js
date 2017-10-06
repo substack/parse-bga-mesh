@@ -67,24 +67,22 @@ module.exports = function (abuf) {
     vertex: new Uint8Array(
       data.buffer, offsets.vertex, header.counts.vertex * vsize)
   }
-  if (header.types.edge === 'uint16') {
-    rdata.edge = new Uint16Array(
-      rdata.buffer, offsets.edge, header.counts.edge*2)
-  } else if (header.types.edge === 'uint32') {
-    rdata.edge = new Uint32Array(
-      data.buffer, offsets.edge, header.counts.edge*2)
-  } else {
+  var esize = sizes[header.types.edge]
+  if (esize === undefined) {
     throw new Error('unsupported edge type ' + header.types.edge)
   }
-  if (header.types.triangle === 'uint16') {
-    rdata.triangle = new Uint16Array(
-      data.buffer, offsets.triangle, header.counts.triangle*3)
-  } else if (header.types.triangle === 'uint32') {
-    rdata.triangle = new Uint32Array(
-      data.buffer, offsets.triangle, header.counts.triangle*3)
-  } else {
+  rdata.edge = data.subarray(
+    offsets.edge,
+    offsets.edge + header.counts.edge*esize*2
+  )
+  var tsize = sizes[header.types.triangle]
+  if (tsize === undefined) {
     throw new Error('unsupported triangle type ' + header.types.triangle)
   }
+  rdata.triangle = data.subarray(
+    offsets.triangle,
+    offsets.triangle + header.counts.triangle*tsize*3
+  )
   return {
     header: header,
     data: rdata
