@@ -1,0 +1,5 @@
+var parse = require('../')
+var fs = require('fs')
+var buf = fs.readFileSync(process.argv[2])
+var mesh = parse(buf.buffer.slice(0,buf.length))
+console.log(mesh)
