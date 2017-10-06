@@ -1,10 +1,22 @@
 {
+  "name": "parse-bga-mesh",
+  "version": "1.0.0",
+  "main": "index.js",
+  "description": "parse a bga mesh",
   "browser": {
     "./u8-to-string.js": "./u8-to-string-browser.js"
   },
-  "devDependencies": {
-    "choo": "^6.4.0",
-    "convert-obj": "^1.0.0",
-    "xhr": "^2.4.0"
-  }
+  "repository": {
+    "type": "git",
+    "url": "ssb://%KiJRuIqofRa9G+T4empthx7Nue8TDolkfCzq9rHiIfc=.sha256"
+  },
+  "homepage": "https://git.scuttlebot.io/%25KiJRuIqofRa9G+T4empthx7Nue8TDolkfCzq9rHiIfc=.sha256",
+  "keywords": [
+    "parser",
+    "bga",
+    "3d",
+    "2d",
+    "mesh"
+  ],
+  "license": "BSD"
 }
