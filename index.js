@@ -14,7 +14,6 @@ module.exports = function (abuf) {
     }
   }
   var offsets = { vertex: i+1 }
-  var start = performance.now()
   var lines = toStr(data.subarray(0,i-1)).split('\n')
   var m = /^BGA (.+)/.exec(lines[0])
   if (!m) throw new Error('magic number not found')
@@ -66,7 +65,7 @@ module.exports = function (abuf) {
 
   var rdata = {
     vertex: new Uint8Array(
-      data.buffer, offsets.vertex, header.counts.vertex * vsize),
+      data.buffer, offsets.vertex, header.counts.vertex * vsize)
   }
   if (header.types.edge === 'uint16') {
     rdata.edge = new Uint16Array(
