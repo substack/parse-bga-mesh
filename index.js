@@ -15,7 +15,7 @@ module.exports = function (abuf) {
       break
     }
   }
-  var offsets = { attributes: i+1 }
+  var offsets = { vertex: i+1 }
   var lines = encode(data.subarray(0,i-1)).split('\n')
   var m = /^BGA (.+)/.exec(lines[0])
   if (!m) throw new Error('magic number not found')
@@ -58,25 +58,25 @@ module.exports = function (abuf) {
     vsize += sizes[header.attributes[i].type]
   }
   var lengths = {
-    attributes: header.counts.vertex * vsize,
-    edges: header.counts.edge * sizes[header.types.edge],
-    triangles: header.counts.triangle * sizes[header.types.triangle]
+    vertex: header.counts.vertex * vsize,
+    edge: header.counts.edge * sizes[header.types.edge],
+    triangle: header.counts.triangle * sizes[header.types.triangle]
   }
-  offsets.edges = offsets.attributes + lengths.attributes
-  offsets.triangles = offsets.edges + lengths.edges
+  offsets.edge = offsets.vertex + lengths.vertex
+  offsets.triangle = offsets.edge + lengths.edge
   return {
     header: header,
     data: {
-      attributes: data.subarray(
-        offsets.attributes, offsets.attributes + lengths.attributes),
-      edges: header.types.edge
+      vertex: data.subarray(
+        offsets.vertex, offsets.vertex + lengths.vertex),
+      edge: header.types.edge
         ? toarray(header.types.edge,
-            data.subarray(offsets.edges, offsets.edges + lengths.edges))
+            data.subarray(offsets.edge, offsets.edge + lengths.edge))
         : [],
-      triangles: header.types.triangle
+      triangle: header.types.triangle
         ? toarray(header.types.triangle,
-            data.subarray(offsets.triangles,
-              offsets.triangles + lengths.triangles))
+            data.subarray(offsets.triangle,
+              offsets.triangle + lengths.triangle))
         : []
     }
   }
