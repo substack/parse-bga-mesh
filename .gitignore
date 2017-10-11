@@ -1,4 +1,4 @@
 node_modules
-bench/*.bga
-bench/*.obj
-bench/*.json
+bench/data/*.bga
+bench/data/*.obj
+bench/data/*.json

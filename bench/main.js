@@ -70,7 +70,7 @@ app.use(function (state, emitter) {
       var type = state.formats[j]
       var parser = parse[type]
       var opts = Object.assign({
-        url: `/${file}.${type}`
+        url: `/data/${file}.${type}`
       }, xhrOpts[type])
       xhr(opts, function (err, res, body) {
         if (err || res.statusCode !== 200) return
