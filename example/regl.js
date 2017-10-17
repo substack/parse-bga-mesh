@@ -11,17 +11,9 @@ xhr({ url: '/teapot.bga', responseType: 'arraybuffer' }, onxhr)
 function onxhr (err, res, body) {
   if (err || res.statusCode !== 200) return
   var mesh = parse(body)
-  var attributes = {}
-  var attrBuffer = regl.buffer({
+  var buffer = regl.buffer({
     type: 'float32',
-    data: mesh.data.vertex
-  })
-  mesh.header.attributes.forEach(function (attr) {
-    attributes[attr.name] = {
-      offset: attr.offset,
-      stride: attr.stride,
-      buffer: attrBuffer
-    }
+    data: body
   })
   draw = regl({
     frag: `
@@ -39,12 +31,21 @@ function onxhr (err, res, body) {
         gl_PointSize = 4.0;
       }
     `,
-    attributes: attributes,
+    attributes: {
+      position: {
+        buffer: buffer,
+        offset: mesh.data.vertex.position.offset,
+        stride: mesh.data.vertex.position.stride
+      }
+    },
+    count: mesh.data.triangle.cell.count * mesh.data.triangle.cell.quantity,
     elements: regl.elements({
-      type: mesh.header.types.triangle,
-      data: mesh.data.triangle
+      data: new Uint32Array(body, mesh.data.triangle.cell.offset,
+        mesh.data.triangle.cell.count * mesh.data.triangle.cell.quantity),
+      count: mesh.data.triangle.cell.count * 3
     })
   })
+  console.log(mesh.data)
 }
 
 regl.frame(function () {

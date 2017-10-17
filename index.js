@@ -5,6 +5,17 @@ var sizes = {
   mat2: 16, mat3: 36, mat4: 64,
   uint8: 1, uint16: 2, uint32: 4
 }
+var btypes = {
+  float: 'float', vec2: 'float', vec3: 'float', vec4: 'float',
+  mat2: 'float', mat3: 'float', mat4: 'float',
+  uint8: 'uint8', uint16: 'uint16', uint32: 'uint32'
+}
+var qtypes = {
+  float: 1, vec2: 2, vec3: 3, vec4: 4,
+  mat2: 4, mat3: 9, mat4: 16,
+  uint8: 1, uint16: 1, uint32: 1
+}
+
 var re = {
   version: /^2\./,
   endian: /^(little|big) endian\s*(?:$|\/\/)/,
@@ -26,11 +37,10 @@ module.exports = function (abuf) {
   var result = {
     version: m[1],
     endian: null,
-    data: abuf,
-    buffers: []
+    data: {}
   }
   var counts = {}, offsets = {}, strides = {}
-  var offset = dataOffset
+  var bufnames = [], varnames = {}
   if (!re.version.test(result.version)) {
     throw new Error('only version 2.x supported, found: ' + result.version)
   }
@@ -47,26 +57,39 @@ module.exports = function (abuf) {
         ? 1 : Number(m[4].substring(1,m[4].length-1))
       var size = sizes[type] * quantity
       if (!offsets.hasOwnProperty(bufname)) {
-        offsets[bufname] = offset
+        offsets[bufname] = dataOffset
         strides[bufname] = 0
-        offset += size
+        bufnames.push(bufname)
+        varnames[bufname] = []
+        result.data[bufname] = {}
       }
       strides[bufname] += size
-      result.buffers.push({
-        type: type,
-        name: bufname + '.' + varname,
+      varnames[bufname].push(varname)
+      result.data[bufname][varname] = {
+        type: btypes[type],
+        quantity: quantity * qtypes[type],
         offset: offsets[bufname],
         stride: 0
-      })
+      }
+      offsets[bufname] += size
     } else if (m = re.count.exec(line)) {
       counts[m[2]] = Number(m[1])
     }
   }
-  var len = result.buffers.length
-  for (var i = 0; i < len; i++) {
-    var b = result.buffers[i]
-    var bufname = b.name.substr(0,b.name.indexOf('.'))
-    b.stride = strides[bufname]
+  var offset = 0
+  for (var i = 0; i < bufnames.length; i++) {
+    var bufname = bufnames[i]
+    var vnames = varnames[bufname]
+    var size = 0
+    for (var j = 0; j < vnames.length; j++) {
+      var varname = vnames[j]
+      var b = result.data[bufname][varname]
+      b.stride = strides[bufname]
+      b.count = counts[bufname]
+      b.offset += offset
+      size += sizes[b.type] * b.count * b.quantity
+    }
+    offset += size
   }
   return result
 }
