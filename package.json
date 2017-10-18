@@ -1,6 +1,6 @@
 {
   "name": "parse-bga-mesh",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "main": "index.js",
   "description": "parse a bga mesh",
   "browser": {
