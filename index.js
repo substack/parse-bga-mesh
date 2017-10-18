@@ -1,9 +1,11 @@
 var toStr = require('./u8-to-string.js')
+var lcm = require('lcm')
 
 var sizes = {
   float: 4, vec2: 8, vec3: 12, vec4: 16,
   mat2: 16, mat3: 36, mat4: 64,
-  uint8: 1, uint16: 2, uint32: 4
+  uint8: 1, uint16: 2, uint32: 4,
+  int8: 1, int16: 2, int32: 4
 }
 var btypes = {
   float: 'float', vec2: 'float', vec3: 'float', vec4: 'float',
@@ -80,16 +82,25 @@ module.exports = function (abuf) {
   for (var i = 0; i < bufnames.length; i++) {
     var bufname = bufnames[i]
     var vnames = varnames[bufname]
-    var size = 0
+    var size = 0, factor = 1
+    var b
     for (var j = 0; j < vnames.length; j++) {
       var varname = vnames[j]
-      var b = result.data[bufname][varname]
+      b = result.data[bufname][varname]
       b.stride = strides[bufname]
       b.count = counts[bufname]
       b.offset += offset
+      factor = lcm(factor,sizes[b.type])
       size += sizes[b.type] * b.count * b.quantity
     }
-    offset += size
+    b = result.data[bufname][vnames[0]]
+    var pad = (factor - (b.offset % factor)) % factor
+    for (var j = 0; j < vnames.length; j++) {
+      var varname = vnames[j]
+      b = result.data[bufname][varname]
+      b.offset += pad
+    }
+    offset += size + pad
   }
   return result
 }

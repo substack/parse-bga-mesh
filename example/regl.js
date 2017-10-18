@@ -45,7 +45,6 @@ function onxhr (err, res, body) {
       count: mesh.data.triangle.cell.count * 3
     })
   })
-  console.log(mesh.data)
 }
 
 regl.frame(function () {
