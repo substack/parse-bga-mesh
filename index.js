@@ -34,7 +34,7 @@ module.exports = function (abuf) {
   }
   var dataOffset = i+1
   var lines = toStr(data.subarray(0,i-1)).split('\n')
-  var m = /^BGA (.+)/.exec(lines[0])
+  var m = /^BGA (\S+)/.exec(lines[0])
   if (!m) throw new Error('magic number not found')
   var result = {
     version: m[1],

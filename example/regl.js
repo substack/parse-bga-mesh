@@ -18,15 +18,18 @@ function onxhr (err, res, body) {
   draw = regl({
     frag: `
       precision highp float;
+      varying vec3 vnorm;
       void main () {
-        gl_FragColor = vec4(0,0.5,0.5,1);
+        gl_FragColor = vec4(vnorm*0.5+0.5,1);
       }
     `,
     vert: `
       precision highp float;
       uniform mat4 projection, view;
-      attribute vec3 position;
+      attribute vec3 position, normal;
+      varying vec3 vnorm;
       void main () {
+        vnorm = normal;
         gl_Position = projection * view * vec4(position,1);
         gl_PointSize = 4.0;
       }
@@ -36,6 +39,11 @@ function onxhr (err, res, body) {
         buffer: buffer,
         offset: mesh.data.vertex.position.offset,
         stride: mesh.data.vertex.position.stride
+      },
+      normal: {
+        buffer: buffer,
+        offset: mesh.data.vertex.normal.offset,
+        stride: mesh.data.vertex.normal.stride
       }
     },
     count: mesh.data.triangle.cell.count * mesh.data.triangle.cell.quantity,
