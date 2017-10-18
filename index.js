@@ -1,5 +1,4 @@
 var toStr = require('./u8-to-string.js')
-var lcm = require('lcm')
 
 var sizes = {
   float: 4, vec2: 8, vec3: 12, vec4: 16,
@@ -90,7 +89,7 @@ module.exports = function (abuf) {
       b.stride = strides[bufname]
       b.count = counts[bufname]
       b.offset += offset
-      factor = lcm(factor,sizes[b.type])
+      factor = flcm(factor,sizes[b.type])
       size += sizes[b.type] * b.count * b.quantity
     }
     b = result.data[bufname][vnames[0]]
@@ -104,3 +103,5 @@ module.exports = function (abuf) {
   }
   return result
 }
+
+function flcm (a, b) { return Math.max(a,b) }
