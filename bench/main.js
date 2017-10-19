@@ -3,12 +3,14 @@ var parse = {
   bga: require('../'),
   obj: require('./lib/parse-obj.js'),
   gltf: require('./lib/parse-gltf.js'),
+  glb: require('./lib/parse-glb.js'),
   json: JSON.parse
 }
 var xhrOpts = {
   bga: { responseType: 'arraybuffer' },
-  gltf: {},
   obj: {},
+  gltf: {},
+  glb: { responseType: 'arraybuffer' },
   json: {}
 }
 
@@ -48,8 +50,9 @@ app.route('*', function (state) {
 
 app.use(function (state, emitter) {
   state.perf = []
-  state.formats = ['bga','json','obj','gltf']
+  state.formats = ['bga','json','obj','gltf','glb']
   state.files = ['Gemini','Mercury','MKIII','MMSEV','Z2']
+  var TIMES = 5
 
   emitter.on('perf', function (perf) {
     var m = state.perf[perf.model]
@@ -77,7 +80,7 @@ app.use(function (state, emitter) {
       xhr(opts, function (err, res, body) {
         if (err || res.statusCode !== 200) return
         ;(function nextTrial (k) {
-          if (k === 5) return nextFormat(j+1)
+          if (k === TIMES) return nextFormat(j+1)
           var start = performance.now()
           var mesh = parser(body)
           var elapsed = performance.now() - start

@@ -334,6 +334,7 @@ Node.prototype.traversePostOrder = function(parent, executeFunc) {
 Node.prototype.traverseTwoExecFun = function(parent, execFunPre, execFunPos) {
     execFunPre(this, parent);
     for (var i = 0, len = this.children.length; i < len; i++) {
+    	if (!this.children[i]) continue
         this.children[i].traverseTwoExecFun(this, execFunPre, execFunPos);
     }
     execFunPos(this, parent);
@@ -1085,6 +1086,65 @@ glTFLoader.prototype.parse = function (string) {
 	    loader._bufferRequested++;
 
 	    _loadArrayBuffer(loader.baseUri + json.buffers[bid].uri, loadArrayBufferCallback);
+
+	}
+    }
+
+    // load images
+    var loadImageCallback = function (img, iid) {
+	loader._imageLoaded++;
+	loader.glTF.images[iid] = img;
+	loader._checkComplete();
+    };
+
+    var iid;
+
+    if (json.images) {
+	for (iid in json.images) {
+	    loader._imageRequested++;
+	    _loadImage(loader.baseUri + json.images[iid].uri, iid, loadImageCallback);
+	}
+    }
+
+    loader._checkComplete();
+    return this.glTF
+};
+
+glTFLoader.prototype.fromBinary = function (header, body) {
+
+    var loader = this;
+    this.baseUri = '';
+    this._init();
+    this.onload = function () {}
+
+    var json = header;
+
+    loader.glTF = new glTFModel(json);
+
+    var bid;
+
+    var loadArrayBufferCallback = function (resource) {
+	
+	loader._buffers[bid] = resource;
+	loader._bufferLoaded++;
+	if (loader._bufferTasks[bid]) {
+	    var i,len;
+	    for (i = 0, len = loader._bufferTasks[bid].length; i < len; ++i) {
+		(loader._bufferTasks[bid][i])(resource);
+	    }
+	}
+	loader._checkComplete();
+
+    };
+
+    // Launch loading resources task: buffers, etc.
+    if (json.buffers) {
+	for (bid in json.buffers) {
+
+	    loader._bufferRequested++;
+
+	    //_loadArrayBuffer(loader.baseUri + json.buffers[bid].uri, loadArrayBufferCallback);
+	    loadArrayBufferCallback(body)
 
 	}
     }
