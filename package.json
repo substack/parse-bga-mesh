@@ -25,6 +25,5 @@
     "regl-camera": "^2.1.1",
     "xhr": "^2.4.0"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

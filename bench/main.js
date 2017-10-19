@@ -2,10 +2,12 @@ var xhr = require('xhr')
 var parse = {
   bga: require('../'),
   obj: require('./lib/parse-obj.js'),
+  gltf: require('./lib/parse-gltf.js'),
   json: JSON.parse
 }
 var xhrOpts = {
   bga: { responseType: 'arraybuffer' },
+  gltf: {},
   obj: {},
   json: {}
 }
@@ -46,7 +48,7 @@ app.route('*', function (state) {
 
 app.use(function (state, emitter) {
   state.perf = []
-  state.formats = ['bga','json','obj']
+  state.formats = ['bga','json','obj','gltf']
   state.files = ['Gemini','Mercury','MKIII','MMSEV','Z2']
 
   emitter.on('perf', function (perf) {
