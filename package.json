@@ -1,6 +1,6 @@
 {
   "name": "parse-bga-mesh",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "index.js",
   "description": "parse a bga mesh",
   "browser": {
@@ -8,9 +8,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssb://%KiJRuIqofRa9G+T4empthx7Nue8TDolkfCzq9rHiIfc=.sha256"
+    "url": "git://github.com/substack/parse-bga-mesh.git"
   },
-  "homepage": "https://git.scuttlebot.io/%25KiJRuIqofRa9G+T4empthx7Nue8TDolkfCzq9rHiIfc=.sha256",
+  "homepage": "https://substack.net/bga.html",
   "keywords": [
     "parser",
     "bga",
@@ -21,6 +21,7 @@
   "license": "BSD",
   "devDependencies": {
     "choo": "^6.4.0",
+    "gl-mat4": "^1.1.4",
     "regl": "^1.3.0",
     "regl-camera": "^2.1.1",
     "xhr": "^2.4.0"
