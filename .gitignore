@@ -2,3 +2,5 @@ node_modules
 bench/data/*.bga
 bench/data/*.obj
 bench/data/*.json
+bench/data/*.glb
+bench/data/*.gltf
